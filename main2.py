@@ -5,7 +5,7 @@ import csv
 import sys
 import os
 
-# --- Settings ---
+# Settings 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
@@ -16,7 +16,7 @@ app.iconbitmap(r"C:\Users\lucas.roff.ITCMI\OneDrive - Inter-Tribal Council of Mi
 
 edit_box = None
 
-# --- Container for pages ---
+# Container for pages 
 container = ctk.CTkFrame(app)
 container.pack(fill="both", expand=True)
 container.pack_propagate(False)
@@ -26,9 +26,8 @@ def show_page(page_name):
     pages[page_name].tkraise()
 
 
-# ---------------------------
-# --- Homepage Page ---
-# ---------------------------
+
+# Homepage Page 
 page_home = ctk.CTkFrame(container)
 page_home.place(relwidth=1, relheight=1)
 pages["home"] = page_home
@@ -61,14 +60,14 @@ btn_start = ctk.CTkButton(
 btn_start.pack()
 
 
-# ---------------------------
-# --- Calculator Page ---
-# ---------------------------
+# 
+# Calculator Page 
+
 page_calc = ctk.CTkFrame(container)
 page_calc.place(relwidth=1, relheight=1)
 pages["calculator"] = page_calc
 
-# --- Functions ---
+#  Functions 
 def recalc_totals():
     total_tax = 0
     total_sum = 0
@@ -83,7 +82,7 @@ def recalc_totals():
         except:
             price = 0.0
         tax = price * tax_rate
-        total = price + tax  # Fixed: Changed from price - tax to price + tax
+        total = price + tax  
         values[2] = f"{tax:.2f}"
         values[3] = f"{total:.2f}"
         tree.item(item, values=values)
@@ -123,7 +122,7 @@ def add_row_popup():
             tax_rate = 0.06
 
         tax = price * tax_rate
-        total = price + tax  # Fixed: Changed from price - tax to price + tax
+        total = price + tax  
 
         tree.insert("", "end", values=(
             product,
@@ -135,7 +134,7 @@ def add_row_popup():
         recalc_totals()
         popup.destroy()
 
-    ctk.CTkButton(popup, text="Add New Entry", fg_color="#f5550b", hover_color="#970a0a", command=submit_row).pack(pady=15)  # Removed invalid bg_color
+    ctk.CTkButton(popup, text="Add New Entry", fg_color="#f5550b", hover_color="#970a0a", command=submit_row).pack(pady=15) 
 frame_buttons = ctk.CTkFrame(page_calc)
 frame_buttons.pack(pady=(0, 20), padx=20, fill="x")
 ctk.CTkButton(frame_buttons, text="Add New Entry",
@@ -191,7 +190,7 @@ def save_to_excel():
     data = []
     for item in tree.get_children():
         values = tree.item(item,"values")
-        data.append({"Product": values[0], "Price": float(values[1]), "Tax": float(values[2]), "Total": float(values[3])})  # Renamed "Taxies" to "Tax" and "Price w/o Tax" to "Total"
+        data.append({"Product": values[0], "Price": float(values[1]), "Tax": float(values[2]), "Total": float(values[3])})  
     pd.DataFrame(data).to_excel(file_path, index=False)
 
 def load_excel_dynamic():
@@ -207,10 +206,9 @@ def load_excel_dynamic():
             tree.delete(row)
 
         tax_rate = float(entry_tax.get()) / 100
-
-        # -------------------------
+         
         # Handle XLSX (Excel)
-        # -------------------------
+        
         if file_path.endswith(".xlsx"):
             wb = openpyxl.load_workbook(file_path)
             sheet = wb.active
@@ -240,9 +238,9 @@ def load_excel_dynamic():
                     f"{total:.2f}"
                 ))
 
-        # -------------------------
+         
         # Handle CSV
-        # -------------------------
+        
         elif file_path.endswith(".csv"):
             with open(file_path, newline='', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
@@ -271,7 +269,7 @@ def load_excel_dynamic():
 
     except Exception as e:
         lbl_total.configure(text=f"Error: {e}")
-# --- Copy / Paste ---
+# Copy / Paste
 def copy_selected(event=None):
     rows = ["\t".join(tree.item(i,"values")) for i in tree.selection()]
     if not rows: return
@@ -291,14 +289,14 @@ def paste_to_tree(event=None):
     except:
         pass
 
-# --- Right-click Menu ---
+# Right-click Menu 
 right_click_menu = Menu(app, tearoff=0)
 right_click_menu.add_command(label="Add Product", command=add_product)
 right_click_menu.add_command(label="Delete Selected", command=delete_product)
 right_click_menu.add_separator()
 right_click_menu.add_command(label="Copy", command=copy_selected)
 right_click_menu.add_command(label="Paste", command=paste_to_tree)
-right_click_menu.add_command(label="Add Row...", command=add_row_popup)  # Removed duplicate "Add Product"
+right_click_menu.add_command(label="Add Row...", command=add_row_popup)  
 
 
 def show_context_menu(event):
@@ -307,7 +305,7 @@ def show_context_menu(event):
         tree.selection_set(row_id)
     right_click_menu.tk_popup(event.x_root, event.y_root)
 
-# --- Layout ---
+# Layout 
 lbl_title = ctk.CTkLabel(page_calc, text="Dynamic Sales Tax Calculator", font=("Arial", 22, "bold"))
 lbl_title.pack(pady=(20, 10))
 
@@ -318,18 +316,18 @@ ctk.CTkLabel(frame_tax, text="Tax Rate (%):", font=("Arial",12)).pack(side="left
 entry_tax = ctk.CTkEntry(frame_tax, width=80)
 entry_tax.insert(0, "6")
 entry_tax.pack(side="left", padx=5)
-ctk.CTkButton(frame_tax, text="Recalculate", fg_color="#f50baf", hover_color="#d97706", command=recalc_totals).pack(side="left", padx=10)  # Removed invalid bg_color
+ctk.CTkButton(frame_tax, text="Recalculate", fg_color="#f50baf", hover_color="#d97706", command=recalc_totals).pack(side="left", padx=10) 
 
 # File buttons
 frame_buttons = ctk.CTkFrame(page_calc)
 frame_buttons.pack(pady=(0, 20), padx=20, fill="x")
 ctk.CTkButton(frame_buttons, text="Load Excel", command=load_excel_dynamic, fg_color="#22c55e", hover_color="#16a34a").pack(side="left", padx=10)
-ctk.CTkButton(frame_buttons, text="Save Excel", fg_color="#2bcf34", hover_color="#16a34a", command=save_to_excel).pack(side="right", padx=10)  # Removed invalid bg_color
+ctk.CTkButton(frame_buttons, text="Save Excel", fg_color="#2bcf34", hover_color="#16a34a", command=save_to_excel).pack(side="right", padx=10)  
 
 # Table
 frame_table = ctk.CTkFrame(page_calc)
 frame_table.pack(padx=20, pady=10, fill="both", expand=True)
-columns = ("Product","Price","Tax","Total")  # Renamed "Price w/o Tax" to "Total"
+columns = ("Product","Price","Tax","Total") 
 tree = ttk.Treeview(frame_table, columns=columns, show="headings", selectmode="extended")
 for col in columns:
     tree.heading(col, text=col)
@@ -359,13 +357,13 @@ lbl_tax_total.pack(pady=(10,0))
 lbl_total = ctk.CTkLabel(page_calc, text="Grand Total: $0.00", font=("Arial",14))
 lbl_total.pack(pady=(0,10))
 
-# --- Bindings ---
+# Bindings 
 tree.bind("<Double-1>", on_double_click)
 tree.bind("<Button-3>", show_context_menu)
 tree.bind("<Control-c>", copy_selected)
 tree.bind("<Control-v>", paste_to_tree)
 
-# --- Drag selection ---
+# Drag selection 
 drag_selecting = False
 start_item = None
 def on_button_press(event):
@@ -397,6 +395,6 @@ tree.bind("<B1-Motion>", on_mouse_drag)
 tree.bind("<ButtonRelease-1>", on_button_release)
 
 
-# --- Show homepage first ---
+#Show homepage first
 show_page("home")
 app.mainloop()
